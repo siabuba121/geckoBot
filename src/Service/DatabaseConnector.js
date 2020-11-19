@@ -3,16 +3,20 @@ const Coin  = require('../Model/Coin')
 const format = require('string-format')
 
 class DatabaseConnector {
-    constructor(sync = false) {
+    constructor() {
+        this.dbUrl = format('{0}://{1}:{2}@{3}:{4}/{5}',
+            'mysql',
+            process.env.DB_USER,
+            process.env.DB_USER_PASSWORD,
+            process.env.DB_HOST,
+            process.env.DB_PORT,
+            process.env.DB_NAME
+        );
+    }
+
+    async init(sync = false) {
         this.client = new Sequelize(
-            format('{0}://{1}:{2}@{3}:{4}/{5}',
-                'mysql',
-                process.env.DB_USER,
-                process.env.DB_USER_PASSWORD,
-                process.env.DB_HOST,
-                process.env.DB_PORT,
-                process.env.DB_NAME
-            ),
+            this.dbUrl,
             {
                 define: {
                     freezeTableName: true
@@ -21,7 +25,7 @@ class DatabaseConnector {
         );
 
         let self = this;
-        this.testConnection().then(
+        await this.testConnection().then(
             function() {
                 self.initModels();
                 if (sync === true) {
