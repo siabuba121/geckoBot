@@ -10,4 +10,10 @@ gecko.getCoinList().then(
     }
 );
 
-new DatabaseConnector();
+let dbConnector = new DatabaseConnector();
+dbConnector.init(false).then(
+    function() {
+        process.exit(1);
+    }
+);
+
